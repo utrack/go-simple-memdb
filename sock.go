@@ -13,7 +13,8 @@ type DBSocket struct {
 	sess *StorageSession
 }
 
-// NewSocket returns new RWSocket that reads requests, relays
+// NewSocket returns new RWSocket that reads requests
+// according to protocol specs, relays
 // them to the Database via StorageSession and returns the output.
 func NewSocket(db storage.DB) *DBSocket {
 	return &DBSocket{sess: NewSession(db)}
