@@ -19,7 +19,7 @@ func TestBasicStorage(t *testing.T) {
 		})
 		Convey("With value", func() {
 			valKey := RandString(16)
-			value := ValueState{Data: RandString(64)}
+			value := valueState{Data: RandString(64)}
 
 			l.set(valKey, value)
 			Convey("getIsLocal should return true", func() {
@@ -66,7 +66,7 @@ func TestBasicStorage(t *testing.T) {
 
 			Convey("With another value", func() {
 				vk2 := RandString(16)
-				v2 := ValueState{Data: RandString(256)}
+				v2 := valueState{Data: RandString(256)}
 
 				l.set(vk2, v2)
 
@@ -129,12 +129,12 @@ func TestTransactions(t *testing.T) {
 	Convey("With layer and fields", t, func() {
 		l := newLayer()
 
-		baseValues := map[string]ValueState{}
+		baseValues := map[string]valueState{}
 		var key string
-		var value ValueState
+		var value valueState
 		for i := 0; i < 5; i++ {
 			key = RandString(16)
-			value = ValueState{Data: RandString(64)}
+			value = valueState{Data: RandString(64)}
 			baseValues[key] = value
 			l.set(key, value)
 		}
@@ -207,7 +207,7 @@ func TestTransactions(t *testing.T) {
 				})
 
 				Convey("On non-conflicting change to the base", func() {
-					l.set(RandString(32), ValueState{Data: RandString(64)})
+					l.set(RandString(32), valueState{Data: RandString(64)})
 					Convey("Commit should succeed", func() {
 						_, err := tx.commit(false)
 						So(err, ShouldBeNil)

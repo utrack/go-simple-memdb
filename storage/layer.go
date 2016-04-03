@@ -20,7 +20,7 @@ type layer struct {
 	// parent transaction or root layer.
 	parentLayer *layer
 	// data stores the values.
-	data map[string]*ValueState
+	data map[string]*valueState
 	// valueCache keeps count for each unique value in the layer
 	// and caches the counts coming from the underlying layers.
 	valueCache map[string]uint64
@@ -30,12 +30,12 @@ type layer struct {
 
 func newLayer() *layer {
 	return &layer{
-		data:       map[string]*ValueState{},
+		data:       map[string]*valueState{},
 		valueCache: map[string]uint64{},
 	}
 }
 
-func (t *layer) set(key string, value ValueState) {
+func (t *layer) set(key string, value valueState) {
 	var isLocal bool
 	value.Prev, isLocal = t.getIsLocal(key)
 
@@ -50,20 +50,20 @@ func (t *layer) set(key string, value ValueState) {
 }
 
 func (t *layer) unset(key string) {
-	newValue := ValueState{Data: "", Prev: t.get(key), Deleted: true}
+	newValue := valueState{Data: "", Prev: t.get(key), Deleted: true}
 	t.data[key] = &newValue
 	t.refreshCacheForValue(newValue)
 }
 
 // get returns the value by its key.
-func (t *layer) get(key string) *ValueState {
+func (t *layer) get(key string) *valueState {
 	ret, _ := t.getIsLocal(key)
 	return ret
 }
 
-// getIsLocal returns a ValueState for the key.
+// getIsLocal returns a valueState for the key.
 // Second param is true if the value was found locally.
-func (t *layer) getIsLocal(key string) (*ValueState, bool) {
+func (t *layer) getIsLocal(key string) (*valueState, bool) {
 	// Try to return this layer's data
 	ret := t.data[key]
 	if ret != nil {
@@ -99,7 +99,7 @@ func (t *layer) numEqualTo(value string) (ret uint64) {
 }
 
 // refreshCacheForValue actualizes the valueCache for changed values.
-func (t *layer) refreshCacheForValue(value ValueState) {
+func (t *layer) refreshCacheForValue(value valueState) {
 	// Initiate the count for current and previous values
 	// from underlying layers first if exists
 	if t.parentLayer != nil {

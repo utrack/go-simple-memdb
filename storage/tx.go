@@ -3,7 +3,7 @@ package storage
 func (t *layer) tx() *layer {
 	return &layer{
 		parentLayer: t,
-		data:        map[string]*ValueState{},
+		data:        map[string]*valueState{},
 		valueCache:  map[string]uint64{},
 	}
 }
