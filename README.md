@@ -15,6 +15,10 @@ Golang compiler and tools (v1.5 or later) are required. See the [official Gettin
 ```
 go get -u github.com/utrack/go-simple-memdb
 ```
+If you're using Go < 1.6 - you need to set envvar `GO15VENDOREXPERIMENT` to `1` before go-getting:
+```
+GO15VENDOREXPERIMENT=1 go get -u github.com/utrack/go-simple-memdb
+```
 
 # Running
 Check that your `PATH` envvar has `$GOPATH\bin` and run the command:
