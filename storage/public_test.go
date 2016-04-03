@@ -54,7 +54,6 @@ func TestPublic(t *testing.T) {
 				})
 			})
 		})
-
 	})
 }
 

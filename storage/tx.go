@@ -21,6 +21,9 @@ func (t *layer) commitRecurse(inRecursion bool) (ret *layer, err error) {
 		return t, ErrNoTransaction.Here()
 	}
 
+	if t.isClosed {
+		return t, ErrTxClosed.Here()
+	}
 	// defer recursion to parent layer's commit()
 	defer func() {
 		if err == nil {
@@ -44,6 +47,7 @@ func (t *layer) commitRecurse(inRecursion bool) (ret *layer, err error) {
 		t.parentLayer.set(key, *value)
 	}
 
+	t.isClosed = true
 	// returns are handled in the defer
 	return
 }
@@ -53,5 +57,10 @@ func (t *layer) rollback() (*layer, error) {
 	if t.parentLayer == nil {
 		return t, ErrNoTransaction.Here()
 	}
+
+	if t.isClosed {
+		return t, ErrTxClosed.Here()
+	}
+	t.isClosed = true
 	return t.parentLayer, nil
 }

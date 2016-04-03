@@ -25,6 +25,9 @@ type layer struct {
 	// and caches the counts coming from the underlying layers.
 	valueCache map[string]uint64
 
+	// isClosed is true if this layer was committed or rolled back.
+	isClosed bool
+
 	mu sync.Mutex
 }
 
