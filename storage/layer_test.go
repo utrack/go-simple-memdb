@@ -22,9 +22,25 @@ func TestBasicStorage(t *testing.T) {
 			value := ValueState{Data: RandString(64)}
 
 			l.set(valKey, value)
+			Convey("getIsLocal should return true", func() {
+				got, isLocal := l.getIsLocal(valKey)
+				So(got, ShouldResemble, &value)
+				So(isLocal, ShouldBeTrue)
+			})
 			Convey("Should retrieve successfully", func() {
 				got := l.get(valKey)
 				So(got, ShouldResemble, &value)
+			})
+
+			Convey("Deletion", func() {
+				l.unset(valKey)
+
+				Convey("Should return deleted value", func() {
+					got := l.get(valKey)
+					So(got.Deleted, ShouldEqual, true)
+					So(got.Data, ShouldEqual, "")
+				})
+
 			})
 
 			Convey("Should count numEqualTo", func() {
@@ -131,6 +147,12 @@ func TestTransactions(t *testing.T) {
 				}
 			})
 
+			Convey("getIsLocal should return false", func() {
+				got, isLocal := tx.getIsLocal(key)
+				So(got, ShouldResemble, &value)
+				So(isLocal, ShouldBeFalse)
+			})
+
 			Convey("On change for tx", func() {
 				newValue := value
 				newValue.Data = RandString(256)
@@ -207,6 +229,7 @@ func TestTransactions(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(lGot, ShouldResemble, l)
 				})
+
 			})
 		})
 	})

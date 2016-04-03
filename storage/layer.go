@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -37,12 +36,13 @@ func newLayer() *layer {
 }
 
 func (t *layer) set(key string, value ValueState) {
-	value.Prev = t.get(key)
+	var isLocal bool
+	value.Prev, isLocal = t.getIsLocal(key)
 
 	// Crop unneeded leaves, save memory
 	// 3 -> 2 -> 1 becomes 3 -> 1
-	// TODO crosses tx and breaks!
-	if value.Prev != nil && value.Prev.Prev != nil {
+	// Don't cross the layer's boundaries
+	if isLocal && value.Prev != nil && value.Prev.Prev != nil {
 		value.Prev = value.Prev.Prev
 	}
 	t.data[key] = &value
@@ -55,20 +55,28 @@ func (t *layer) unset(key string) {
 	t.refreshCacheForValue(newValue)
 }
 
+// get returns the value by its key.
 func (t *layer) get(key string) *ValueState {
+	ret, _ := t.getIsLocal(key)
+	return ret
+}
+
+// getIsLocal returns a ValueState for the key.
+// Second param is true if the value was found locally.
+func (t *layer) getIsLocal(key string) (*ValueState, bool) {
 	// Try to return this layer's data
 	ret := t.data[key]
 	if ret != nil {
-		return ret
+		return ret, true
 	}
 
 	// if no underlying layer - return
 	if t.parentLayer == nil {
-		return nil
+		return nil, false
 	}
 
 	// recurse to underlying
-	return t.parentLayer.get(key)
+	return t.parentLayer.get(key), false
 }
 
 func (t *layer) numEqualTo(value string) (ret uint64) {
@@ -122,8 +130,6 @@ func (t *layer) commit(inRecursion bool) (ret *layer, err error) {
 	// Check for conflicts
 	for key, value := range t.data {
 		if t.parentLayer.get(key) != value.Prev {
-			fmt.Println(value.Prev)
-			fmt.Println(t.parentLayer.get(key))
 			return t.parentLayer, ErrTxConflict.Here()
 		}
 	}
