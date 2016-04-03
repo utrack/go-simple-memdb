@@ -98,58 +98,6 @@ func (t *layer) numEqualTo(value string) (ret uint64) {
 	return retCount
 }
 
-func (t *layer) tx() *layer {
-	return &layer{
-		parentLayer: t,
-		data:        map[string]*ValueState{},
-		valueCache:  map[string]uint64{},
-	}
-}
-
-func (t *layer) commit(inRecursion bool) (ret *layer, err error) {
-	// If nowhere to commit to (root layer)
-	if t.parentLayer == nil {
-		if inRecursion {
-			// Return err if called directly
-			return t, nil
-		}
-		return t, ErrNoTransaction.Here()
-	}
-
-	// defer recursion to parent layer's commit()
-	defer func() {
-		if err == nil {
-			ret, err = t.parentLayer.commit(true)
-		}
-	}()
-
-	// Lock the underlying layer
-	t.parentLayer.mu.Lock()
-	defer t.parentLayer.mu.Unlock()
-
-	// Check for conflicts
-	for key, value := range t.data {
-		if t.parentLayer.get(key) != value.Prev {
-			return t.parentLayer, ErrTxConflict.Here()
-		}
-	}
-
-	// Copy this layer's data over and recurse
-	for key, value := range t.data {
-		t.parentLayer.set(key, *value)
-	}
-
-	// returns are handled in the defer
-	return
-}
-
-func (t *layer) rollback() (*layer, error) {
-	if t.parentLayer == nil {
-		return t, ErrNoTransaction.Here()
-	}
-	return t.parentLayer, nil
-}
-
 // refreshCacheForValue actualizes the valueCache for changed values.
 func (t *layer) refreshCacheForValue(value ValueState) {
 	// Initiate the count for current and previous values
