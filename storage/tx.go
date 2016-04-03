@@ -11,7 +11,7 @@ func (t *layer) tx() *layer {
 // commit dumps current layer's data to the parent and recurses
 // commit() back to the root.
 // boolean is true if commit() was called recursively.
-func (t *layer) commit(inRecursion bool) (ret *layer, err error) {
+func (t *layer) commitRecurse(inRecursion bool) (ret *layer, err error) {
 	// If nowhere to commit to (root layer)
 	if t.parentLayer == nil {
 		if inRecursion {
@@ -24,7 +24,7 @@ func (t *layer) commit(inRecursion bool) (ret *layer, err error) {
 	// defer recursion to parent layer's commit()
 	defer func() {
 		if err == nil {
-			ret, err = t.parentLayer.commit(true)
+			ret, err = t.parentLayer.commitRecurse(true)
 		}
 	}()
 
@@ -34,7 +34,7 @@ func (t *layer) commit(inRecursion bool) (ret *layer, err error) {
 
 	// Check for conflicts
 	for key, value := range t.data {
-		if t.parentLayer.get(key) != value.Prev {
+		if gotParent := t.parentLayer.get(key); gotParent != nil && gotParent != value.Prev {
 			return t.parentLayer, ErrTxConflict.Here()
 		}
 	}

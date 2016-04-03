@@ -173,7 +173,7 @@ func TestTransactions(t *testing.T) {
 				})
 
 				Convey("Commit", func() {
-					lGot, err := tx.commit(false)
+					lGot, err := tx.commitRecurse(false)
 					So(err, ShouldBeNil)
 					So(lGot, ShouldResemble, l)
 					Convey("Tx values should be written", func() {
@@ -199,7 +199,7 @@ func TestTransactions(t *testing.T) {
 					value.Data = RandString(256)
 					l.set(key, value)
 					Convey("Commit should fail", func() {
-						lGot, err := tx.commit(false)
+						lGot, err := tx.commitRecurse(false)
 						So(err, ShouldNotBeNil)
 						So(merry.Is(err, ErrTxConflict), ShouldEqual, true)
 						So(lGot, ShouldResemble, l)
@@ -209,7 +209,7 @@ func TestTransactions(t *testing.T) {
 				Convey("On non-conflicting change to the base", func() {
 					l.set(RandString(32), valueState{Data: RandString(64)})
 					Convey("Commit should succeed", func() {
-						_, err := tx.commit(false)
+						_, err := tx.commitRecurse(false)
 						So(err, ShouldBeNil)
 					})
 
@@ -225,7 +225,7 @@ func TestTransactions(t *testing.T) {
 					So(lGot, ShouldResemble, tx)
 				})
 				Convey("Commit should return base layer", func() {
-					lGot, err := tx2.commit(false)
+					lGot, err := tx2.commitRecurse(false)
 					So(err, ShouldBeNil)
 					So(lGot, ShouldResemble, l)
 				})
