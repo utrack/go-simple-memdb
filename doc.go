@@ -1,4 +1,4 @@
-/* This binary provides a simple in-memory key-value database.
+/*This binary provides a simple in-memory key-value database.
 
 The commands are red from stdin and written to stdout.
 
