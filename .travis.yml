@@ -5,6 +5,9 @@ go:
   - 1.5.1
   - tip
 
+env:
+  - GO15VENDOREXPERIMENT=1
+
 script:
   - go test -v -race -covermode=atomic --coverprofile=coverage.out github.com/utrack/go-simple-memdb/storage
   - go test -v -race -covermode=atomic --coverprofile=coverage_main.out github.com/utrack/go-simple-memdb
