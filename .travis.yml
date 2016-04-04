@@ -10,6 +10,8 @@ env:
 
 script:
   - go test -v -race -covermode=atomic --coverprofile=coverage.out github.com/utrack/go-simple-memdb/storage
+  - go test -v -race -covermode=atomic --coverprofile=coverage_protocol.out github.com/utrack/go-simple-memdb/protocol
+  - tail -n +2 coverage_protocol.out >> coverage.out
   - go test -v -race -covermode=atomic --coverprofile=coverage_main.out github.com/utrack/go-simple-memdb
   - tail -n +2 coverage_main.out >> coverage.out
 

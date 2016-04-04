@@ -1,4 +1,4 @@
-package main
+package protocol
 
 import (
 	"bufio"
@@ -8,19 +8,19 @@ import (
 	"strings"
 )
 
-// DBSocket is a sock that reads commands and returns their output.
+// DBSocket is a sock scanner that reads commands and returns their output.
 type DBSocket struct {
 	sess *StorageSession
 }
 
-// NewSocket returns new RWSocket that reads requests
+// NewSocket returns new DBSocket that reads requests
 // according to protocol specs, relays
 // them to the Database via StorageSession and returns the output.
 func NewSocket(db storage.DB) *DBSocket {
 	return &DBSocket{sess: NewSession(db)}
 }
 
-// Process starts the rw pipe.
+// Process starts the IO pipe.
 func (s *DBSocket) Process(rPipe io.Reader, wPipe io.Writer) {
 	r := bufio.NewReader(rPipe)
 	w := bufio.NewWriter(wPipe)

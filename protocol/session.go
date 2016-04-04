@@ -1,11 +1,11 @@
-package main
+package protocol
 
 import (
 	"github.com/ansel1/merry"
 	"github.com/utrack/go-simple-memdb/storage"
 )
 
-// StorageSession handles requests for a session
+// StorageSession handles requests for a connection
 // and returns output strings.
 type StorageSession struct {
 	stor storage.DB
