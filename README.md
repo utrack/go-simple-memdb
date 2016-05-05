@@ -8,6 +8,9 @@
 
 Simple in-memory database written in Go.
 
+### WARNING - this is just an example - unusable for production!
+Get/Set concurrency locks aren't there yet.
+
 # Requirements
 Golang compiler and tools (v1.5 or later) are required. See the [official Getting Started guide](https://golang.org/doc/install) or your distro's docs for detailed instructions.
 
